@@ -59,5 +59,23 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		}
+		if event.Type == linebot.EventTypeMemberJoined{
+			var _, err = bot.GetMessageQuota().Do()
+			if err != nil {
+				log.Println("Quota err:", err)
+			}
+			if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("Hello! Welcome! Please introduce yourself in the notes!")).Do(); err != nil {
+				log.Print(err)
+			}
+		}
+		if event.Type == linebot.EventTypeMemberLeft{
+			var _, err = bot.GetMessageQuota().Do()
+			if err != nil {
+				log.Println("Quota err:", err)
+			}
+			if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("Ok! Bye bye!")).Do(); err != nil {
+				log.Print(err)
+			}
+		}
 	}
 }
