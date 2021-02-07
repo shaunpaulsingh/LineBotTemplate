@@ -14,12 +14,10 @@ package main
 
 import (
 	"fmt"
+	"github.com/line/line-bot-sdk-go/linebot"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
-
-	"github.com/line/line-bot-sdk-go/linebot"
 )
 
 var bot *linebot.Client
@@ -50,13 +48,22 @@ func callbackHandler(w http.ResponseWriter, r *http.Request) {
 		if event.Type == linebot.EventTypeMessage {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
-				quota, err := bot.GetMessageQuota().Do()
+				var _ , err = bot.GetMessageQuota().Do()
 				if err != nil {
 					log.Println("Quota err:", err)
 				}
-				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.ID+":"+message.Text+" OK! remain message:"+strconv.FormatInt(quota.Value, 10))).Do(); err != nil {
+				if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(message.Text)).Do(); err != nil {
 					log.Print(err)
 				}
+			}
+		}
+		if event.Type == linebot.EventTypeJoin{
+			var _, err = bot.GetMessageQuota().Do()
+			if err != nil {
+				log.Println("Quota err:", err)
+			}
+			if _, err = bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("Hello!")).Do(); err != nil {
+				log.Print(err)
 			}
 		}
 		if event.Type == linebot.EventTypeMemberJoined{
